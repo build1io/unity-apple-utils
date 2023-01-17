@@ -11,21 +11,23 @@ namespace Build1.UnityAppleUtils.Editor
     {
         private const string ConfigPath = "Build1/build1-apple-utils.json";
 
-        public static AppleUtilsConfiguration Config { get; private set; }
+        public static AppleUtilsConfiguration Config      { get; private set; }
+        public static bool                    Initialized => _configPath != null;
 
-        private static string _configPath;
+        private static readonly string _configPath;
 
         static AppleUtilsProcessor()
         {
+            _configPath = Path.Combine(Application.dataPath, ConfigPath);
+            
             EditorApplication.delayCall += Initialize;
         }
 
         private static void Initialize()
         {
-            _configPath = Path.Combine(Application.dataPath, ConfigPath);
-            
-            Config = LoadConfig();
-            if (Config == null)
+            if (CheckIfConfigured())
+                Config = LoadConfig();
+            else
                 Setup();
         }
 
@@ -33,8 +35,16 @@ namespace Build1.UnityAppleUtils.Editor
          * Public.
          */
 
+        public static bool CheckIfConfigured()
+        {
+            return File.Exists(_configPath);
+        }
+
         public static void Setup()
         {
+            if (!Initialized)
+                return;
+            
             var config = new AppleUtilsConfiguration
             {
                 appUsesNonExemptEncryption = EditorUtility.DisplayDialog("Unity Apple Utils", "Does this app uses any kind of non extent encryption?", "Yes, Enable Encryption Check", "No, Disable Encryption Check"),

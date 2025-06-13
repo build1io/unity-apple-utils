@@ -63,12 +63,13 @@ namespace Build1.UnityAppleUtils.Editor
          * Private.
          */
 
-        private static AppleUtilsConfiguration LoadConfig()
+        internal static AppleUtilsConfiguration LoadConfig()
         {
-            if (!File.Exists(_configPath))
+            var path = Path.Combine(Application.dataPath, ConfigPath);
+            if (!File.Exists(path))
                 return null;
 
-            var json = File.ReadAllText(_configPath);
+            var json = File.ReadAllText(path);
             return JsonUtility.FromJson<AppleUtilsConfiguration>(json);
         }
     }

@@ -13,10 +13,12 @@ namespace Build1.UnityAppleUtils.Editor
         [PostProcessBuild(999)]
         private static void OnPostProcessBuild(BuildTarget buildTarget, string buildPath)
         {
-            if (buildTarget != BuildTarget.iOS || AppleUtilsProcessor.Config == null)
+            if (buildTarget != BuildTarget.iOS)
                 return;
 
-            if (!AppleUtilsProcessor.Config.appUsesNonExemptEncryption)
+            var config = AppleUtilsProcessor.LoadConfig();
+            
+            if (!config.appUsesNonExemptEncryption)
             {
                 var plist = new PlistDocument();
                 var filePath = Path.Combine(buildPath, "Info.plist");
@@ -27,7 +29,7 @@ namespace Build1.UnityAppleUtils.Editor
                 plist.WriteToFile(filePath);    
             }
 
-            if (!AppleUtilsProcessor.Config.bitCodeEnabled)
+            if (!config.bitCodeEnabled)
             {
                 var projPath = PBXProject.GetPBXProjectPath(buildPath);
  
